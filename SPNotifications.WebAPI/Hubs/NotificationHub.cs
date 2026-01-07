@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SPNotifications.Application.Services;
-using SPotifications.Application.DTOs;
 
 namespace SPNotifications.WebAPI.Hubs;
 
@@ -15,12 +14,15 @@ public class NotificationHub : Hub
 
     public async Task SendMessage(string user, string message)
     {
-        await _service.CreateAsync(new CreateNotificationDto
-        {
-            User = user,
-            Message = message
-        });
+        await _service.CreateAsync(
+            message: message,
+            type: "signalr"
+        );
 
-        await Clients.All.SendAsync("ReceiveNotification", user, message);
+        await Clients.All.SendAsync(
+            "ReceiveNotification",
+            user,
+            message
+        );
     }
 }

@@ -6,5 +6,10 @@ public interface INotificationRepository
 {
     Task AddAsync(Notification notification);
 
-    Task<List<Notification>> GetAllAsync();
+    Task<List<Notification>> GetPagedAsync(
+        int page,
+        int pageSize,
+        bool? read,
+        string? type
+    );
 }

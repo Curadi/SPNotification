@@ -19,10 +19,25 @@ public class NotificationRepository : INotificationRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Notification>> GetAllAsync()
+    public async Task<List<Notification>> GetPagedAsync(
+        int page,
+        int pageSize,
+        bool? read,
+        string? type
+    )
     {
-        return await _context.Notifications
+        var query = _context.Notifications.AsQueryable();
+
+        if (read.HasValue)
+            query = query.Where(n => n.Read == read.Value);
+
+        if (!string.IsNullOrEmpty(type))
+            query = query.Where(n => n.Type == type);
+
+        return await query
             .OrderByDescending(n => n.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
     }
 }

@@ -1,7 +1,6 @@
 ﻿using SPNotifications.Application.DTOs;
 using SPNotifications.Domain.Entities;
 using SPNotifications.Domain.Interfaces;
-using SPotifications.Application.DTOs;
 
 namespace SPNotifications.Application.Services;
 
@@ -14,29 +13,34 @@ public class NotificationService
         _repository = repository;
     }
 
-    public async Task CreateAsync(CreateNotificationDto dto)
+    public async Task<List<NotificationDto>> GetAllAsync(NotificationQueryDto query)
     {
-        var notification = new Notification
-        {
-            Id = Guid.NewGuid(),
-            User = dto.User,
-            Message = dto.Message,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        await _repository.AddAsync(notification);
-    }
-
-    public async Task<List<NotificationDto>> GetAllAsync()
-    {
-        var notifications = await _repository.GetAllAsync();
+        var notifications = await _repository.GetPagedAsync(
+            query.Page,
+            query.PageSize,
+            query.Read,
+            query.Type
+        );
 
         return notifications.Select(n => new NotificationDto
         {
             Id = n.Id,
-            User = n.User,
             Message = n.Message,
+            Type = n.Type,
+            Read = n.Read,
             CreatedAt = n.CreatedAt
         }).ToList();
+    }
+
+    public async Task CreateAsync(string message, string type)
+    {
+        var notification = new Notification
+        {
+            Id = Guid.NewGuid(),
+            Message = message,
+            Type = type
+        };
+
+        await _repository.AddAsync(notification);
     }
 }

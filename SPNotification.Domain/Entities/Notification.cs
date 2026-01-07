@@ -3,7 +3,8 @@
 public class Notification
 {
     public Guid Id { get; set; }
-    public string User { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
+    public string Type { get; set; } = "info";
+    public bool Read { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

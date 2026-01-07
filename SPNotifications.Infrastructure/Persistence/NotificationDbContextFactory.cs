@@ -11,7 +11,7 @@ public class NotificationDbContextFactory
         var optionsBuilder = new DbContextOptionsBuilder<NotificationDbContext>();
 
         optionsBuilder.UseSqlServer(
-            "Server=localhost;Database=SPNotificationsDB;Trusted_Connection=True;TrustServerCertificate=True"
+             "Server=(localdb)\\MSSQLLocalDB;Database=SPNotificationsDB;Trusted_Connection=True;"
         );
 
         return new NotificationDbContext(optionsBuilder.Options);

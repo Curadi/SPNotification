@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SPNotifications.Application.DTOs;
 using SPNotifications.Application.Services;
 
 namespace SPNotifications.WebAPI.Controllers;
@@ -15,9 +16,9 @@ public class NotificationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] NotificationQueryDto query)
     {
-        var notifications = await _service.GetAllAsync();
-        return Ok(notifications);
+        var result = await _service.GetAllAsync(query);
+        return Ok(result);
     }
 }

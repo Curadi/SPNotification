@@ -1,4 +1,4 @@
-﻿namespace SPotifications.Application.DTOs;
+﻿namespace SPNotifications.Application.DTOs;
 
 public class CreateNotificationDto
 {
