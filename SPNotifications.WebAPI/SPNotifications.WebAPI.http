@@ -1,0 +1,6 @@
+@SPNotifications.WebAPI_HostAddress = http://localhost:5127
+
+GET {{SPNotifications.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
