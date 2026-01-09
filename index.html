@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Notificações em Tempo Real</title>
+
+    <!-- SignalR CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #notifications {
+            margin-top: 20px;
+        }
+
+        .notification {
+            background: #ffffff;
+            border-left: 5px solid #0078d4;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔔 Notificações em Tempo Real</h1>
+    <p>Conectado ao SignalR</p>
+
+    <div id="notifications"></div>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7012/notificationHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("ReceiveNotification", (user, message) => {
+            const container = document.getElementById("notifications");
+
+            const div = document.createElement("div");
+            div.className = "notification";
+
+            div.innerHTML = `
+                    <strong>${user}</strong><br/>
+                    ${message}
+                    <div class="time">${new Date().toLocaleTimeString()}</div>
+                `;
+
+            container.prepend(div);
+        });
+
+        connection.start()
+            .then(() => console.log("✅ Conectado ao SignalR"))
+            .catch(err => console.error("❌ Erro ao conectar:", err));
+    </script>
+
+    <button onclick="send()">Enviar teste</button>
+
+    <script>
+        function send() {
+            fetch("https://localhost:7012/api/notifications", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user: "Frontend",
+                    message: "Mensagem enviada do HTML 😎",
+                    type: "info"
+                })
+            });
+        }
+    </script>
+
+</body>
+</html>

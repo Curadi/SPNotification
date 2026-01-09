@@ -7,4 +7,5 @@ public class NotificationDto
     public string Type { get; set; } = string.Empty;
     public bool Read { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string User { get; set; } = string.Empty;
 }

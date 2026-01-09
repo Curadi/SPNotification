@@ -6,4 +6,5 @@ public class NotificationQueryDto
     public int PageSize { get; set; } = 10;
     public bool? Read { get; set; }
     public string? Type { get; set; }
+
 }

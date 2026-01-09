@@ -2,42 +2,53 @@
 using SPNotifications.Domain.Entities;
 using SPNotifications.Domain.Interfaces;
 
-namespace SPNotifications.Infrastructure.Persistence;
-
-public class NotificationRepository : INotificationRepository
+namespace SPNotifications.Infrastructure.Persistence
 {
-    private readonly NotificationDbContext _context;
-
-    public NotificationRepository(NotificationDbContext context)
+    public class NotificationRepository : INotificationRepository
     {
-        _context = context;
-    }
+        private readonly NotificationDbContext _context;
 
-    public async Task AddAsync(Notification notification)
-    {
-        _context.Notifications.Add(notification);
-        await _context.SaveChangesAsync();
-    }
+        public NotificationRepository(NotificationDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<List<Notification>> GetPagedAsync(
-        int page,
-        int pageSize,
-        bool? read,
-        string? type
-    )
-    {
-        var query = _context.Notifications.AsQueryable();
+        public async Task<IEnumerable<Notification>> GetPagedAsync(
+            int page,
+            int pageSize,
+            bool? read,
+            string? type)
+        {
+            var query = _context.Notifications.AsQueryable();
 
-        if (read.HasValue)
-            query = query.Where(n => n.Read == read.Value);
+            if (read.HasValue)
+                query = query.Where(n => n.Read == read.Value);
 
-        if (!string.IsNullOrEmpty(type))
-            query = query.Where(n => n.Type == type);
+            if (!string.IsNullOrEmpty(type))
+                query = query.Where(n => n.Type == type);
 
-        return await query
-            .OrderByDescending(n => n.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+            return await query
+                .OrderByDescending(n => n.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<Notification?> GetByIdAsync(Guid id)
+        {
+            return await _context.Notifications.FindAsync(id);
+        }
+
+        public async Task AddAsync(Notification notification)
+        {
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Notification notification)
+        {
+            _context.Notifications.Update(notification);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -1,24 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SPNotifications.Application.DTOs;
-using SPNotifications.Application.Services;
+using SPNotifications.Application.Interfaces;
 
-namespace SPNotifications.WebAPI.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class NotificationsController : ControllerBase
+namespace SPNotifications.WebAPI.Controllers
 {
-    private readonly NotificationService _service;
-
-    public NotificationsController(NotificationService service)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class NotificationsController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly INotificationService _service;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] NotificationQueryDto query)
-    {
-        var result = await _service.GetAllAsync(query);
-        return Ok(result);
+        public NotificationsController(INotificationService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] NotificationQueryDto query)
+        {
+            var result = await _service.GetAllAsync(query);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateNotificationDto dto)
+        {
+            await _service.CreateAsync(dto);
+            return Ok();
+        }
+
+        [HttpPut("{id}/read")]
+        public async Task<IActionResult> MarkAsRead(Guid id)
+        {
+            await _service.MarkAsReadAsync(id);
+            return NoContent();
+        }
     }
 }
