@@ -1,10 +1,11 @@
-﻿using SPNotifications.Domain.Entities;
+﻿using SPNotifications.Domain.Common;
+using SPNotifications.Domain.Entities;
 
 namespace SPNotifications.Domain.Interfaces
 {
     public interface INotificationRepository
     {
-        Task<IEnumerable<Notification>> GetPagedAsync(
+        Task<PagedResult<Notification>> GetPagedAsync(
             int page,
             int pageSize,
             bool? read,

@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SPNotifications.Application.DTOs;
 using SPNotifications.Application.Interfaces;
+using SPNotifications.Domain.Common;
 using SPNotifications.WebAPI.Controllers;
+using Xunit;
 
 namespace SPNotifications.Tests.WebAPI.Controllers
-{ 
+{
     public class NotificationsControllerTests
     {
         private readonly Mock<INotificationService> _serviceMock;
@@ -14,30 +16,34 @@ namespace SPNotifications.Tests.WebAPI.Controllers
 
         public NotificationsControllerTests()
         {
-        _serviceMock = new Mock<INotificationService>();
-        _controller = new NotificationsController(_serviceMock.Object);
+            _serviceMock = new Mock<INotificationService>();
+            _controller = new NotificationsController(_serviceMock.Object);
         }
 
         [Fact]
-        public async Task GetAll_ShouldReturnOkWithNotifications()
+        public async Task GetAll_ShouldReturnOkWithPagedResult()
         {
             // Arrange
             var query = new NotificationQueryDto();
 
-            var notifications = new List<NotificationDto>
-        {
-            new NotificationDto
+            var pagedResult = new PagedResult<NotificationDto>
             {
-            Message = "Teste",
-            User = "Sistema",
-            Type = "info",
-            Read = false
-            }
-        };
+                Items = new List<NotificationDto>
+                {
+                    new NotificationDto
+                    {
+                        Message = "Teste",
+                        User = "Sistema",
+                        Type = "info",
+                        Read = false
+                    }
+                },
+                TotalCount = 1
+            };
 
             _serviceMock
                 .Setup(s => s.GetAllAsync(query))
-                .ReturnsAsync(notifications);
+                .ReturnsAsync(pagedResult);
 
             // Act
             var result = await _controller.GetAll(query);
@@ -47,8 +53,7 @@ namespace SPNotifications.Tests.WebAPI.Controllers
 
             var okResult = result as OkObjectResult;
 
-            okResult!.Value.Should().BeEquivalentTo(notifications);
-
+            okResult!.Value.Should().BeEquivalentTo(pagedResult);
         }
 
         [Fact]
@@ -78,7 +83,6 @@ namespace SPNotifications.Tests.WebAPI.Controllers
             );
         }
 
-
         [Fact]
         public async Task MarkAsRead_ShouldReturnNoContent()
         {
@@ -100,8 +104,5 @@ namespace SPNotifications.Tests.WebAPI.Controllers
                 Times.Once
             );
         }
-
-
     }
-
 }

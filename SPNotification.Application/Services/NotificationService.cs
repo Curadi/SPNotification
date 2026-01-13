@@ -2,6 +2,7 @@
 using SPNotifications.Application.Interfaces;
 using SPNotifications.Domain.Entities;
 using SPNotifications.Domain.Interfaces;
+using SPNotifications.Domain.Common;
 
 namespace SPNotifications.Application.Services
 {
@@ -14,28 +15,31 @@ namespace SPNotifications.Application.Services
             _repository = repository;
         }
 
-        // GET com paginação + filtros
-        public async Task<IEnumerable<NotificationDto>> GetAllAsync(NotificationQueryDto query)
+        public async Task<PagedResult<NotificationDto>> GetAllAsync(NotificationQueryDto query)
         {
-            var notifications = await _repository.GetPagedAsync(
+            var pagedNotifications = await _repository.GetPagedAsync(
                 query.Page,
                 query.PageSize,
                 query.Read,
                 query.Type
             );
 
-            return notifications.Select(n => new NotificationDto
+            return new PagedResult<NotificationDto>
             {
-                Id = n.Id,
-                User = n.Username,
-                Message = n.Message,
-                Type = n.Type,
-                Read = n.Read,
-                CreatedAt = n.CreatedAt
-            });
+                Items = pagedNotifications.Items.Select(n => new NotificationDto
+                {
+                    Id = n.Id,
+                    User = n.Username,
+                    Message = n.Message,
+                    Type = n.Type,
+                    Read = n.Read,
+                    CreatedAt = n.CreatedAt
+                }).ToList(),
+
+                TotalCount = pagedNotifications.TotalCount
+            };
         }
 
-        // CREATE
         public async Task CreateAsync(CreateNotificationDto dto)
         {
             var notification = new Notification
@@ -51,7 +55,6 @@ namespace SPNotifications.Application.Services
             await _repository.AddAsync(notification);
         }
 
-        // MARK AS READ
         public async Task MarkAsReadAsync(Guid id)
         {
             var notification = await _repository.GetByIdAsync(id);
