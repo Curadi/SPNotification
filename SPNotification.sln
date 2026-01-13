@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "notification-demo", "notifi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPNotifications.Tests", "SPNotifications.Tests\SPNotifications.Tests.csproj", "{C7DB0382-50C0-4771-A284-30695E669C54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPNotification.Tests.Integration", "SPNotification.Testes.Integration\SPNotification.Tests.Integration.csproj", "{0EFB3081-DF63-4701-9CE7-6D9977BA35FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{C7DB0382-50C0-4771-A284-30695E669C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7DB0382-50C0-4771-A284-30695E669C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7DB0382-50C0-4771-A284-30695E669C54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EFB3081-DF63-4701-9CE7-6D9977BA35FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EFB3081-DF63-4701-9CE7-6D9977BA35FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EFB3081-DF63-4701-9CE7-6D9977BA35FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EFB3081-DF63-4701-9CE7-6D9977BA35FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
