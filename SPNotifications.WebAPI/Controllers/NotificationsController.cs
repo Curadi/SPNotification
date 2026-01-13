@@ -25,6 +25,9 @@ namespace SPNotifications.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateNotificationDto dto)
         {
+            if (dto == null)
+                return BadRequest();
+
             await _service.CreateAsync(dto);
             return Ok();
         }
