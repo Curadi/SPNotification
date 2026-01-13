@@ -4,6 +4,7 @@ using SPNotifications.Application.Services;
 using SPNotifications.Domain.Interfaces;
 using SPNotifications.Infrastructure.Persistence;
 using SPNotifications.WebAPI.Hubs;
+using SPNotifications.WebAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

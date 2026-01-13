@@ -3,6 +3,7 @@ using SPNotifications.Application.Interfaces;
 using SPNotifications.Domain.Entities;
 using SPNotifications.Domain.Interfaces;
 using SPNotifications.Domain.Common;
+using SPNotifications.Domain.Exceptions;
 
 namespace SPNotifications.Application.Services
 {
@@ -60,7 +61,7 @@ namespace SPNotifications.Application.Services
             var notification = await _repository.GetByIdAsync(id);
 
             if (notification == null)
-                throw new Exception("Notificação não encontrada");
+                throw new NotFoundException("Notificação não encontrada");
 
             notification.Read = true;
 

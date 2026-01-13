@@ -4,6 +4,7 @@ using Moq;
 using SPNotifications.Application.DTOs;
 using SPNotifications.Application.Interfaces;
 using SPNotifications.Domain.Common;
+using SPNotifications.Domain.Exceptions;
 using SPNotifications.WebAPI.Controllers;
 using Xunit;
 
@@ -351,8 +352,6 @@ namespace SPNotifications.Tests.WebAPI.Controllers
                 Times.Never
             );
         }
-
-
 
 
     }
