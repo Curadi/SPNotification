@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SPNotifications.Application.Interfaces;
 using SPNotifications.Application.Services;
-using SPNotifications.Domain.Interfaces;
 using SPNotifications.Infrastructure.Persistence;
 using SPNotifications.WebAPI.Hubs;
 using SPNotifications.WebAPI.Middleware;

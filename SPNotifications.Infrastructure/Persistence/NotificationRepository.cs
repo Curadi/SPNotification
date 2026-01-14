@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SPNotifications.Domain.Common;
 using SPNotifications.Domain.Entities;
-using SPNotifications.Domain.Interfaces;
+using SPNotifications.Domain.Queries;
+
 
 namespace SPNotifications.Infrastructure.Persistence
 {
@@ -14,26 +15,24 @@ namespace SPNotifications.Infrastructure.Persistence
             _context = context;
         }
 
-        public async Task<PagedResult<Notification>> GetPagedAsync(
-        int page,
-        int pageSize,
-        bool? read,
-        string? type)
+        public async Task<PagedResult<Notification>> GetAllAsync(NotificationQuery query)
         {
-            var query = _context.Notifications.AsQueryable();
+            var notifications = _context.Notifications.AsQueryable();
 
-            if (read.HasValue)
-                query = query.Where(n => n.Read == read);
+            if (query.Read.HasValue)
+                notifications = notifications
+                    .Where(n => n.Read == query.Read);
 
-            if (!string.IsNullOrEmpty(type))
-                query = query.Where(n => n.Type == type);
+            if (!string.IsNullOrWhiteSpace(query.Type))
+                notifications = notifications
+                    .Where(n => n.Type == query.Type);
 
-            var totalCount = await query.CountAsync();
+            var totalCount = await notifications.CountAsync();
 
-            var items = await query
+            var items = await notifications
                 .OrderByDescending(n => n.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
                 .ToListAsync();
 
             return new PagedResult<Notification>
@@ -42,7 +41,6 @@ namespace SPNotifications.Infrastructure.Persistence
                 TotalCount = totalCount
             };
         }
-
 
         public async Task<Notification?> GetByIdAsync(Guid id)
         {

@@ -1,21 +1,11 @@
 ﻿using SPNotifications.Domain.Common;
 using SPNotifications.Domain.Entities;
+using SPNotifications.Domain.Queries;
 
-namespace SPNotifications.Domain.Interfaces
+public interface INotificationRepository
 {
-    public interface INotificationRepository
-    {
-        Task<PagedResult<Notification>> GetPagedAsync(
-            int page,
-            int pageSize,
-            bool? read,
-            string? type
-        );
-
-        Task<Notification?> GetByIdAsync(Guid id);
-
-        Task AddAsync(Notification notification);
-
-        Task UpdateAsync(Notification notification);
-    }
+    Task<PagedResult<Notification>> GetAllAsync(NotificationQuery query);
+    Task<Notification?> GetByIdAsync(Guid id);
+    Task AddAsync(Notification notification);
+    Task UpdateAsync(Notification notification);
 }

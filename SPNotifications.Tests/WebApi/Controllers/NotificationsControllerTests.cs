@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SPNotifications.Application.DTOs;
+using SPNotifications.Application.DTOs.Common;
 using SPNotifications.Application.Interfaces;
-using SPNotifications.Domain.Common;
-using SPNotifications.Domain.Exceptions;
 using SPNotifications.WebAPI.Controllers;
-using Xunit;
 
 namespace SPNotifications.Tests.WebAPI.Controllers
 {
@@ -24,37 +22,35 @@ namespace SPNotifications.Tests.WebAPI.Controllers
         [Fact]
         public async Task GetAll_ShouldReturnOkWithPagedResult()
         {
-            // Arrange
             var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
                 Items = new List<NotificationDto>
+            {
+                new NotificationDto
                 {
-                    new NotificationDto
-                    {
-                        Message = "Teste",
-                        User = "Sistema",
-                        Type = "info",
-                        Read = false
-                    }
-                },
-                TotalCount = 1
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
                 .Setup(s => s.GetAllAsync(query))
-                .ReturnsAsync(pagedResult);
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
-
-            var okResult = result as OkObjectResult;
-
-            okResult!.Value.Should().BeEquivalentTo(pagedResult);
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
         [Fact]
@@ -109,67 +105,70 @@ namespace SPNotifications.Tests.WebAPI.Controllers
         [Fact]
         public async Task GetAll_WithReadFilter_ShouldPassCorrectQuery()
         {
-            // Arrange
-            var query = new NotificationQueryDto
-            {
-                Read = true
-            };
+            var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
                 Items = new List<NotificationDto>
-        {
-            new NotificationDto { Read = true }
-        },
-                TotalCount = 1
+            {
+                new NotificationDto
+                {
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
-                .Setup(s => s.GetAllAsync(It.Is<NotificationQueryDto>(q =>
-                    q.Read == true &&
-                    q.Type == null &&
-                    q.Page == 1 &&
-                    q.PageSize == 10
-                )))
-                .ReturnsAsync(pagedResult);
+                .Setup(s => s.GetAllAsync(query))
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
         [Fact]
         public async Task GetAll_WithTypeFilter_ShouldPassCorrectQuery()
         {
             // Arrange
-            var query = new NotificationQueryDto
-            {
-                Type = "info"
-            };
+            var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
                 Items = new List<NotificationDto>
-        {
-            new NotificationDto { Type = "info" }
-        },
-                TotalCount = 1
+            {
+                new NotificationDto
+                {
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
-                .Setup(s => s.GetAllAsync(It.Is<NotificationQueryDto>(q =>
-                    q.Type == "info" &&
-                    q.Read == null
-                )))
-                .ReturnsAsync(pagedResult);
+                .Setup(s => s.GetAllAsync(query))
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
 
@@ -177,37 +176,35 @@ namespace SPNotifications.Tests.WebAPI.Controllers
         public async Task GetAll_WithReadAndTypeFilter_ShouldPassCorrectQuery()
         {
             // Arrange
-            var query = new NotificationQueryDto
-            {
-                Read = false,
-                Type = "warning"
-            };
+            var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
                 Items = new List<NotificationDto>
-        {
-            new NotificationDto
             {
-                Read = false,
-                Type = "warning"
-            }
-        },
-                TotalCount = 1
+                new NotificationDto
+                {
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
-                .Setup(s => s.GetAllAsync(It.Is<NotificationQueryDto>(q =>
-                    q.Read == false &&
-                    q.Type == "warning"
-                )))
-                .ReturnsAsync(pagedResult);
+                .Setup(s => s.GetAllAsync(query))
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
 
@@ -215,32 +212,35 @@ namespace SPNotifications.Tests.WebAPI.Controllers
         public async Task GetAll_WithPaginationAndFilter_ShouldPassCorrectQuery()
         {
             // Arrange
-            var query = new NotificationQueryDto
-            {
-                Page = 2,
-                PageSize = 5,
-                Read = true
-            };
+            var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
-                Items = new List<NotificationDto>(),
-                TotalCount = 12
+                Items = new List<NotificationDto>
+            {
+                new NotificationDto
+                {
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
-                .Setup(s => s.GetAllAsync(It.Is<NotificationQueryDto>(q =>
-                    q.Page == 2 &&
-                    q.PageSize == 5 &&
-                    q.Read == true
-                )))
-                .ReturnsAsync(pagedResult);
+                .Setup(s => s.GetAllAsync(query))
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
         [Fact]
@@ -249,26 +249,33 @@ namespace SPNotifications.Tests.WebAPI.Controllers
             // Arrange
             var query = new NotificationQueryDto();
 
-            var pagedResult = new PagedResult<NotificationDto>
+            var pagedResponse = new PagedResultResponse<NotificationDto>
             {
-                Items = new List<NotificationDto>(),
-                TotalCount = 0
+                Items = new List<NotificationDto>
+            {
+                new NotificationDto
+                {
+                    User = "Sistema",
+                    Message = "Teste",
+                    Type = "info",
+                    Read = false
+                }
+            },
+                TotalCount = 1,
+                Page = 1,
+                PageSize = 10
             };
 
             _serviceMock
-                .Setup(s => s.GetAllAsync(It.Is<NotificationQueryDto>(q =>
-                    q.Page == 1 &&
-                    q.PageSize == 10 &&
-                    q.Read == null &&
-                    q.Type == null
-                )))
-                .ReturnsAsync(pagedResult);
+                .Setup(s => s.GetAllAsync(query))
+                .ReturnsAsync(pagedResponse);
 
             // Act
             var result = await _controller.GetAll(query);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.Value.Should().BeEquivalentTo(pagedResponse);
         }
 
         [Fact]

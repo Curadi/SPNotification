@@ -5,7 +5,7 @@ using SPNotifications.Application.Interfaces;
 namespace SPNotifications.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/notifications")]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _service;
@@ -16,16 +16,18 @@ namespace SPNotifications.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] NotificationQueryDto query)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] NotificationQueryDto query)
         {
             var result = await _service.GetAllAsync(query);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateNotificationDto dto)
+        public async Task<IActionResult> Create(
+            [FromBody] CreateNotificationDto dto)
         {
-            if (dto == null)
+            if (dto is null)
                 return BadRequest();
 
             await _service.CreateAsync(dto);

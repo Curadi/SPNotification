@@ -1,9 +1,9 @@
 ﻿using SPNotifications.Application.DTOs;
+using SPNotifications.Application.DTOs.Common;
 using SPNotifications.Application.Interfaces;
 using SPNotifications.Domain.Entities;
-using SPNotifications.Domain.Interfaces;
-using SPNotifications.Domain.Common;
 using SPNotifications.Domain.Exceptions;
+using SPNotifications.Domain.Queries;
 
 namespace SPNotifications.Application.Services
 {
@@ -16,46 +16,48 @@ namespace SPNotifications.Application.Services
             _repository = repository;
         }
 
-        public async Task<PagedResult<NotificationDto>> GetAllAsync(NotificationQueryDto query)
+        // GET paginado + filtros
+        public async Task<PagedResultResponse<NotificationDto>> GetAllAsync(
+            NotificationQueryDto dto)
         {
-            var pagedNotifications = await _repository.GetPagedAsync(
-                query.Page,
-                query.PageSize,
-                query.Read,
-                query.Type
-            );
-
-            return new PagedResult<NotificationDto>
+            var query = new NotificationQuery
             {
-                Items = pagedNotifications.Items.Select(n => new NotificationDto
+                Page = dto.Page,
+                PageSize = dto.PageSize,
+                Read = dto.Read,
+                Type = dto.Type
+            };
+
+            var result = await _repository.GetAllAsync(query);
+
+            return new PagedResultResponse<NotificationDto>
+            {
+                Items = result.Items.Select(n => new NotificationDto
                 {
                     Id = n.Id,
-                    User = n.Username,
+                    User = n.User,
                     Message = n.Message,
                     Type = n.Type,
                     Read = n.Read,
                     CreatedAt = n.CreatedAt
                 }).ToList(),
-
-                TotalCount = pagedNotifications.TotalCount
+                TotalCount = result.TotalCount
             };
         }
 
+        // CREATE
         public async Task CreateAsync(CreateNotificationDto dto)
         {
-            var notification = new Notification
-            {
-                Id = Guid.NewGuid(),
-                Username = dto.User,
-                Message = dto.Message,
-                Type = dto.Type,
-                Read = false,
-                CreatedAt = DateTime.UtcNow
-            };
+            var notification = new Notification(
+                dto.User,
+                dto.Message,
+                dto.Type
+            );
 
             await _repository.AddAsync(notification);
         }
 
+        // MARK AS READ
         public async Task MarkAsReadAsync(Guid id)
         {
             var notification = await _repository.GetByIdAsync(id);
@@ -63,7 +65,7 @@ namespace SPNotifications.Application.Services
             if (notification == null)
                 throw new NotFoundException("Notificação não encontrada");
 
-            notification.Read = true;
+            notification.MarkAsRead();
 
             await _repository.UpdateAsync(notification);
         }

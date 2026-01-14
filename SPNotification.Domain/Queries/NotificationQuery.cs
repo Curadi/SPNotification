@@ -1,6 +1,6 @@
-﻿namespace SPNotifications.Application.DTOs
+﻿namespace SPNotifications.Domain.Queries
 {
-    public class NotificationQueryDto
+    public class NotificationQuery
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
